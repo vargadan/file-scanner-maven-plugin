@@ -1,6 +1,5 @@
 package ch.vargadaniel.tools.maven;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -13,7 +12,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -48,10 +46,10 @@ public class FileScannerMojo extends AbstractMojo {
             }
         });
 
-        String filesContent = Arrays.asList(foundFiles).stream().sorted().collect(Collectors.joining("\n"));
+        String filesContent = Arrays.stream(foundFiles).sorted().collect(Collectors.joining("\n"));
         File resultFile = new File(baseDir, resultFileParam);
-        if (!resultFile.getParentFile().exists()) {
-            resultFile.getParentFile().mkdirs();
+        if (resultFile.getParentFile().mkdirs()) {
+            getLog().info(resultFile.getParentFile().getAbsolutePath() + " created.");
         }
         try (FileWriter fileWriter = new FileWriter(resultFile)) {
             fileWriter.write(filesContent);
@@ -59,7 +57,5 @@ public class FileScannerMojo extends AbstractMojo {
         } catch (IOException e) {
             throw new MojoFailureException("Cannot write result file: " + resultFile , e);
         }
-
-
     }
 }
